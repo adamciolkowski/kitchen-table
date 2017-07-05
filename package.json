@@ -1,8 +1,12 @@
 {
   "name": "kitchen-table",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Simple and extensible React table component",
   "main": "dist/KitchenTable.js",
+  "files": [
+    "src/",
+    "dist/"
+  ],
   "scripts": {
     "build": "rimraf dist && webpack",
     "watch": "webpack --watch",
