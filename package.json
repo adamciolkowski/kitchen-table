@@ -1,0 +1,34 @@
+{
+  "name": "kitchen-table",
+  "version": "1.0.0",
+  "description": "Simple and extensible React table component",
+  "main": "dist/KitchenTable.js",
+  "scripts": {
+    "build": "rimraf dist && webpack",
+    "watch": "webpack --watch",
+    "prepublish": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adamciolkowski/kitchen-table.git"
+  },
+  "keywords": ["react", "table"],
+  "author": "Adam Ciołkowski",
+  "license": "MIT",
+  "peerDependencies": {
+    "react": "15.x.x"
+  },
+  "devDependencies": {
+    "babel-loader": "^7.1.1",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "css-loader": "^0.28.4",
+    "node-sass": "^4.5.3",
+    "prop-types": "^15.5.10",
+    "react": "^15.6.1",
+    "rimraf": "^2.6.1",
+    "sass-loader": "^6.0.6",
+    "style-loader": "^0.18.2",
+    "webpack": "^2.2.0"
+  }
+}
