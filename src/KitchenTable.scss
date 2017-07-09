@@ -1,7 +1,7 @@
 table.KitchenTable {
   border-collapse: collapse;
 
-  &, & tr, & th, & td {
+  &, th, td {
     border: 1px solid black;
   }
 }
