@@ -45,5 +45,8 @@
     "moduleNameMapper": {
       "\\.scss$": "<rootDir>/mocks/styleMock.js"
     }
+  },
+  "dependencies": {
+    "lodash": "^4.17.4"
   }
 }

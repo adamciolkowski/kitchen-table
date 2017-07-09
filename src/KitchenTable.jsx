@@ -1,5 +1,7 @@
 import React, {Component} from "react";
 import PropTypes from "prop-types";
+import identity from "lodash/identity";
+import isFunction from "lodash/isFunction";
 import "./KitchenTable.scss";
 
 export default class KitchenTable extends Component {
@@ -18,7 +20,8 @@ export default class KitchenTable extends Component {
             <thead>
             <tr>
                 {this.props.columns.map((column, idx) => {
-                    return <th key={idx}>{column.title}</th>;
+                    let title = isFunction(column.title) ? column.title() : column.title;
+                    return <th key={idx}>{title}</th>;
                 })}
             </tr>
             </thead>
@@ -37,23 +40,61 @@ export default class KitchenTable extends Component {
         return (
             <tr key={idx}>
                 {this.props.columns.map((column, idx) => {
-                    return this.renderCell(row[column.field], idx);
+                    return this.renderCell(row, column, idx);
                 })}
             </tr>
         );
     }
 
-    renderCell(value, idx) {
-        return <td key={idx}>{value}</td>;
+    renderCell(row, column, idx) {
+        return (
+            <td
+                key={idx}
+                className={this.className(row, column)}
+            >{this.displayedCellValue(row, column)}</td>
+        );
+    }
+
+    className(row, column) {
+        if(isFunction(column.className)) {
+            return column.className(this.rawCellValue(row, column), row);
+        }
+        return column.className;
+    }
+
+    displayedCellValue(row, column) {
+        let rawValue = this.rawCellValue(row, column);
+        if (rawValue === null) {
+            return this.defaultCellValue(column);
+        }
+        let renderer = column.renderer || identity;
+        return renderer(rawValue, row);
+    }
+
+    defaultCellValue(column) {
+        if (isFunction(column.defaultValue)) {
+            return column.defaultValue();
+        }
+        return column.defaultValue;
+    }
+
+    rawCellValue(row, column) {
+        if(isFunction(column.field)) {
+            return column.field(row);
+        }
+        return row[column.field];
     }
 }
 
-const column = PropTypes.arrayOf(PropTypes.shape({
-    title: PropTypes.string.isRequired,
-    field: PropTypes.string.isRequired
-}));
+KitchenTable.column = PropTypes.shape({
+    title: PropTypes.oneOfType([PropTypes.string, PropTypes.func]).isRequired,
+    field: PropTypes.oneOfType([PropTypes.string, PropTypes.func]).isRequired,
+    renderer: PropTypes.func,
+    defaultValue: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
+    className: PropTypes.oneOfType([PropTypes.string, PropTypes.func])
+});
 
 KitchenTable.propTypes = {
-    columns: column.isRequired,
+    columns: PropTypes.arrayOf(KitchenTable.column).isRequired,
     data: PropTypes.arrayOf(PropTypes.object).isRequired
 };
