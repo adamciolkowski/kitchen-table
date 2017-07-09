@@ -3,10 +3,6 @@
   "version": "1.1.1",
   "description": "Simple and extensible React table component",
   "main": "dist/KitchenTable.js",
-  "files": [
-    "src/",
-    "dist/"
-  ],
   "scripts": {
     "clean": "rimraf dist",
     "build": "webpack",
