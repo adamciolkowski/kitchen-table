@@ -1,6 +1,6 @@
 {
   "name": "kitchen-table",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Simple and extensible React table component",
   "main": "dist/KitchenTable.js",
   "files": [
@@ -19,7 +19,10 @@
     "type": "git",
     "url": "git+https://github.com/adamciolkowski/kitchen-table.git"
   },
-  "keywords": ["react", "table"],
+  "keywords": [
+    "react",
+    "table"
+  ],
   "author": "Adam Ciołkowski",
   "license": "MIT",
   "peerDependencies": {
