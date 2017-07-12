@@ -10,9 +10,10 @@ Using npm:
 
 ### Usage
 
-Component takes two parameters:
+Component takes the following parameters:
 - `data` an array of objects - each corresponding to one row in the table,
 - `columns` an array of objects - containing configuration for columns.
+- `fixedHeader` boolean specifying if table header should be fixed. Defaults to `false`.
 
 #### Column properties
 
@@ -159,6 +160,13 @@ ReactDOM.render(
     document.getElementById('table')
 );
 ```
+
+### Fixed header and borders
+
+Fixed header is implemented by applying transformation on table header.
+When the table has `border-collapse` property set to `collapse` then the table and it's header share borders.
+When table is scrolled only header cells are fixed, their borders staying with the table.
+To remedy that borders need to be kept separate and styles have to be applied to cells individually.
 
 ### License
 

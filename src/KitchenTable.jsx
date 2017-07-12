@@ -6,9 +6,36 @@ import "./KitchenTable.scss";
 
 export default class KitchenTable extends Component {
 
+    constructor(props) {
+        super(props);
+        this.adjustHeaderPosition = this.adjustHeaderPosition.bind(this);
+    }
+
+    componentDidMount() {
+        if(this.props.fixedHeader) {
+            let parent = this.table.parentElement;
+            parent.addEventListener('scroll', this.adjustHeaderPosition);
+        }
+    }
+
+    componentWillUnmount() {
+        if(this.props.fixedHeader) {
+            let parent = this.table.parentElement;
+            parent.removeEventListener('scroll', this.adjustHeaderPosition);
+        }
+    }
+
+    adjustHeaderPosition() {
+        let parent = this.table.parentElement;
+        this.thead.style.transform = `translateY(${parent.scrollTop}px)`;
+    }
+
     render() {
         return (
-            <table className="KitchenTable">
+            <table
+                ref={table => {this.table = table;}}
+                className="KitchenTable"
+            >
                 {this.renderHead()}
                 {this.renderBody()}
             </table>
@@ -17,7 +44,7 @@ export default class KitchenTable extends Component {
 
     renderHead() {
         return (
-            <thead>
+            <thead ref={thead => {this.thead = thead;}}>
             <tr>
                 {this.props.columns.map((column, idx) => {
                     let title = isFunction(column.title) ? column.title() : column.title;
@@ -96,5 +123,10 @@ KitchenTable.column = PropTypes.shape({
 
 KitchenTable.propTypes = {
     columns: PropTypes.arrayOf(KitchenTable.column).isRequired,
-    data: PropTypes.arrayOf(PropTypes.object).isRequired
+    data: PropTypes.arrayOf(PropTypes.object).isRequired,
+    fixedHeader: PropTypes.bool
+};
+
+KitchenTable.defaultProps = {
+    fixedHeader: false
 };
