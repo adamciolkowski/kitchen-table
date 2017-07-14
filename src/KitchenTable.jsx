@@ -65,7 +65,10 @@ export default class KitchenTable extends Component {
 
     renderRow(row, idx) {
         return (
-            <tr key={idx}>
+            <tr
+                key={idx}
+                onClick={e => this.props.onRowClick(row, idx, e)}
+            >
                 {this.props.columns.map((column, idx) => {
                     return this.renderCell(row, column, idx);
                 })}
@@ -124,7 +127,8 @@ KitchenTable.column = PropTypes.shape({
 KitchenTable.propTypes = {
     columns: PropTypes.arrayOf(KitchenTable.column).isRequired,
     data: PropTypes.arrayOf(PropTypes.object).isRequired,
-    fixedHeader: PropTypes.bool
+    fixedHeader: PropTypes.bool,
+    onRowClick: PropTypes.func
 };
 
 KitchenTable.defaultProps = {

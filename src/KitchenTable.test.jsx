@@ -179,3 +179,30 @@ it('can take function to determine header value', () => {
 
     expect(th.innerHTML).to.equal('<span>Area</span>');
 });
+
+it('can call a function when a row is clicked', done => {
+    let data = [
+        {city: 'Shanghai', area: 6340.5}
+    ];
+    const columns = [
+        {title: 'Area', field: 'area'}
+    ];
+    const component = TestUtils.renderIntoDocument(
+        <KitchenTable
+            data={data}
+            columns={columns}
+            onRowClick={handleRowClick}
+        />
+    );
+
+    let rows = TestUtils.scryRenderedDOMComponentsWithTag(component, 'tr');
+    let firstDataRow = rows[1];
+    TestUtils.Simulate.click(firstDataRow, {button: 0});
+
+    function handleRowClick(row, rowIndex, event) {
+        expect(row).to.deep.equal({city: 'Shanghai', area: 6340.5});
+        expect(rowIndex).to.equal(0);
+        expect(event.type).to.equal('click');
+        done();
+    }
+});
