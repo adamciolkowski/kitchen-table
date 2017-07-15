@@ -206,3 +206,24 @@ it('can call a function when a row is clicked', done => {
         done();
     }
 });
+
+it('can apply css class on specific rows', () => {
+    let data = [
+        {city: 'Shanghai', country: 'China'},
+        {city: 'Delhi', country: 'India'},
+    ];
+    const columns = [
+        {title: 'City', field: 'city'}
+    ];
+    const component = TestUtils.renderIntoDocument(
+        <KitchenTable
+            data={data}
+            columns={columns}
+            rowClass={city => city.country === 'China' ? 'highlighted' : null}
+        />
+    );
+
+    let rows = TestUtils.scryRenderedDOMComponentsWithTag(component, 'tr');
+    expect(rows[1].className).to.equal('highlighted');
+    expect(rows[2].className).to.equal('');
+});

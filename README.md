@@ -14,6 +14,7 @@ Component takes the following parameters:
 - `data` an array of objects - each corresponding to one row in the table,
 - `columns` an array of objects - containing configuration for columns.
 - `fixedHeader` boolean specifying if table header should be fixed. Defaults to `false`.
+- `rowClass` function that returns a css class to be applied on table rows. It takes one argument: table row.
 - `onRowClick` function called whenever table row is clicked. It has 3 arguments: row, zero-based row index 
 and event object.
 
