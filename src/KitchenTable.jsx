@@ -64,22 +64,18 @@ export default class KitchenTable extends Component {
     }
 
     renderRow(row, idx) {
+        let rowProps = {
+            key: idx,
+            className: this.props.rowClass ? this.props.rowClass(row) : null,
+            onClick: this.props.onRowClick ? e => this.props.onRowClick(row, idx, e) : null
+        };
         return (
-            <tr
-                key={idx}
-                className={this.rowClass(row)}
-                onClick={e => this.props.onRowClick(row, idx, e)}
-            >
+            <tr {...rowProps}>
                 {this.props.columns.map((column, idx) => {
                     return this.renderCell(row, column, idx);
                 })}
             </tr>
         );
-    }
-
-    rowClass(row) {
-        let rowClass = this.props.rowClass;
-        return rowClass ? rowClass(row) : null;
     }
 
     renderCell(row, column, idx) {
