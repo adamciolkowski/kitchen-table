@@ -113,6 +113,30 @@ let columns = [
 ];
 ```
 
+- `subColumns`
+
+An array of column definitions. The columns will be rendered as sub-columns.
+
+```javascript
+let columns = [
+    // ...
+    {
+        title: 'Population',
+        subColumns: [
+            {
+                title: 'City proper',
+                field: 'cityProper'
+            },
+            {
+                title: 'Metropolitan area',
+                field: 'metropolitanArea'
+            }
+        ]
+    },
+    // ...
+];
+```
+
 ### Complete example
 
 ```javascript

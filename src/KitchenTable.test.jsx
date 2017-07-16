@@ -1,4 +1,4 @@
-import {expect} from "chai";
+import chai, {expect} from "chai";
 import React from "react";
 import TestUtils from "react-dom/test-utils";
 import KitchenTable from "./KitchenTable.jsx";
@@ -245,4 +245,34 @@ it('can apply css class on specific rows', () => {
     let rows = TestUtils.scryRenderedDOMComponentsWithTag(component, 'tr');
     expect(rows[1].className).to.equal('highlighted');
     expect(rows[2].className).to.equal('');
+});
+
+it('can render sub-columns', () => {
+    let data = [
+        {city: 'Shanghai', cityProper: 24256800, urbanArea: 23416000},
+        {city: 'Karachi', cityProper: 23500000, urbanArea: 25400000},
+    ];
+    const columns = [
+        {title: 'City', field: 'city'},
+        {
+            title: 'Population',
+            subColumns: [
+                {title: 'City proper', field: 'cityProper'},
+                {title: 'Urban area', field: 'urbanArea'}
+            ]
+        }
+    ];
+    const component = TestUtils.renderIntoDocument(
+        <KitchenTable data={data} columns={columns} />
+    );
+    let headerCells = TestUtils.scryRenderedDOMComponentsWithTag(component, 'th');
+    expect(headerCells[0].rowSpan).to.equal('2');
+    expect(headerCells[0].colSpan).to.equal('1');
+    expect(headerCells[1].rowSpan).to.equal('1');
+    expect(headerCells[1].colSpan).to.equal('2');
+
+    expect(headerCells[2].rowSpan).to.equal('1');
+    expect(headerCells[2].colSpan).to.equal('1');
+    expect(headerCells[3].rowSpan).to.equal('1');
+    expect(headerCells[3].colSpan).to.equal('1');
 });

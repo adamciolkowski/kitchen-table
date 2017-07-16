@@ -1,7 +1,10 @@
 import React, {Component} from "react";
 import PropTypes from "prop-types";
+import flatMap from "lodash/flatMap";
 import identity from "lodash/identity";
 import isFunction from "lodash/isFunction";
+import times from "lodash/times";
+import sum from "lodash/sum";
 import "./KitchenTable.scss";
 
 export default class KitchenTable extends Component {
@@ -45,14 +48,65 @@ export default class KitchenTable extends Component {
     renderHead() {
         return (
             <thead ref={thead => {this.thead = thead;}}>
-            <tr>
-                {this.props.columns.map((column, idx) => {
-                    let title = isFunction(column.title) ? column.title() : column.title;
-                    return <th key={idx}>{title}</th>;
-                })}
-            </tr>
+            {this.renderHeaderRows()}
             </thead>
         );
+    }
+
+    renderHeaderRows() {
+        let rowSpan = getHeaderRowSpan(this.props.columns, 1);
+        return times(rowSpan).map(l => this.renderHeaderRow(l, rowSpan));
+
+        function getHeaderRowSpan(columns, level) {
+            let l = level;
+            for(let i = 0; i < columns.length; i++) {
+                let c = columns[i];
+                if(c.subColumns) {
+                    l = Math.max(l, getHeaderRowSpan(c.subColumns, level + 1));
+                }
+            }
+            return l;
+        }
+    }
+
+    renderHeaderRow(level, levels) {
+        let columns = columnsFor.call(this, level);
+        return (
+            <tr key={level}>
+                {this.renderHeaderCells(columns, levels - level)}
+            </tr>
+        );
+
+        function columnsFor(level) {
+            let columns = this.props.columns;
+            times(level, () => {
+                columns = flatMap(columns, c => c.subColumns).filter(sc => sc);
+            });
+            return columns;
+        }
+    }
+
+    renderHeaderCells(columns, rowSpan) {
+        return columns.map((column, idx) => this.renderHeaderCell(column, rowSpan, idx));
+    }
+
+    renderHeaderCell(column, rowSpan, idx) {
+        return (
+            <th
+                key={idx}
+                rowSpan={column.subColumns ? 1 : rowSpan}
+                colSpan={getColSpan(column)}
+            >
+                {isFunction(column.title) ? column.title() : column.title}
+            </th>
+        );
+
+        function getColSpan(column) {
+            let subColumns = column.subColumns;
+            if(!subColumns)
+                return 1;
+            return sum(subColumns.map(getColSpan));
+        }
     }
 
     renderBody() {
@@ -72,10 +126,17 @@ export default class KitchenTable extends Component {
         return (
             <tr {...rowProps}>
                 {this.props.columns.map((column, idx) => {
-                    return this.renderCell(row, column, idx);
+                    return this.renderColumnCells(row, column, idx);
                 })}
             </tr>
         );
+    }
+
+    renderColumnCells(row, column, idx) {
+        if(column.subColumns) {
+            return column.subColumns.map((sc, i) => this.renderCell(row, sc, i));
+        }
+        return this.renderCell(row, column, idx);
     }
 
     renderCell(row, column, idx) {
@@ -120,10 +181,11 @@ export default class KitchenTable extends Component {
 
 KitchenTable.column = PropTypes.shape({
     title: PropTypes.oneOfType([PropTypes.string, PropTypes.func]).isRequired,
-    field: PropTypes.oneOfType([PropTypes.string, PropTypes.func]).isRequired,
+    field: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
     renderer: PropTypes.func,
     defaultValue: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
-    className: PropTypes.oneOfType([PropTypes.string, PropTypes.func])
+    className: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
+    subColumns: PropTypes.array
 });
 
 KitchenTable.propTypes = {
