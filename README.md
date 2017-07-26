@@ -17,6 +17,10 @@ Component takes the following parameters:
 - `rowClass` function that returns a css class to be applied on table rows. It takes one argument: table row.
 - `onRowClick` function called whenever table row is clicked. It has 3 arguments: row, zero-based row index 
 and event object.
+- `onRowMouseEnter` function called whenever a `mouseenter` event is triggered on row. It has 3 arguments: row, zero-based row index 
+and event object.
+- `onRowMouseLeave` function called whenever a `mouseleave` event is triggered on row. It has 3 arguments: row, zero-based row index 
+and event object.
 
 #### Column properties
 

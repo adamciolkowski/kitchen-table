@@ -226,6 +226,60 @@ it('does nothing on row click if row click callback is not defined', () => {
     TestUtils.Simulate.click(firstDataRow);
 });
 
+it('can call a function when mouse enters row', done => {
+    let data = [
+        {city: 'Shanghai', area: 6340.5}
+    ];
+    const columns = [
+        {title: 'Area', field: 'area'}
+    ];
+    const component = TestUtils.renderIntoDocument(
+        <KitchenTable
+            data={data}
+            columns={columns}
+            onRowMouseEnter={handleMouseEnter}
+        />
+    );
+
+    let rows = TestUtils.scryRenderedDOMComponentsWithTag(component, 'tr');
+    let firstDataRow = rows[1];
+    TestUtils.Simulate.mouseEnter(firstDataRow, {button: 0});
+
+    function handleMouseEnter(row, rowIndex, event) {
+        expect(row).to.deep.equal({city: 'Shanghai', area: 6340.5});
+        expect(rowIndex).to.equal(0);
+        expect(event.type).to.equal('mouseenter');
+        done();
+    }
+});
+
+it('can call a function when mouse leaves row', done => {
+    let data = [
+        {city: 'Shanghai', area: 6340.5}
+    ];
+    const columns = [
+        {title: 'Area', field: 'area'}
+    ];
+    const component = TestUtils.renderIntoDocument(
+        <KitchenTable
+            data={data}
+            columns={columns}
+            onRowMouseLeave={handleMouseLeave}
+        />
+    );
+
+    let rows = TestUtils.scryRenderedDOMComponentsWithTag(component, 'tr');
+    let firstDataRow = rows[1];
+    TestUtils.Simulate.mouseLeave(firstDataRow, {button: 0});
+
+    function handleMouseLeave(row, rowIndex, event) {
+        expect(row).to.deep.equal({city: 'Shanghai', area: 6340.5});
+        expect(rowIndex).to.equal(0);
+        expect(event.type).to.equal('mouseleave');
+        done();
+    }
+});
+
 it('can apply css class on specific rows', () => {
     let data = [
         {city: 'Shanghai', country: 'China'},

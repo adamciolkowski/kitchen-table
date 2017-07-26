@@ -121,7 +121,9 @@ export default class KitchenTable extends Component {
         let rowProps = {
             key: idx,
             className: this.props.rowClass ? this.props.rowClass(row) : null,
-            onClick: this.props.onRowClick ? e => this.props.onRowClick(row, idx, e) : null
+            onClick: delegate(this.props.onRowClick, row, idx),
+            onMouseEnter: delegate(this.props.onRowMouseEnter, row, idx),
+            onMouseLeave: delegate(this.props.onRowMouseLeave, row, idx)
         };
         return (
             <tr {...rowProps}>
@@ -130,6 +132,10 @@ export default class KitchenTable extends Component {
                 })}
             </tr>
         );
+
+        function delegate(callback, row, idx) {
+            return callback ? e => callback(row, idx, e) : null;
+        }
     }
 
     renderColumnCells(row, column, idx) {
@@ -193,7 +199,9 @@ KitchenTable.propTypes = {
     data: PropTypes.arrayOf(PropTypes.object).isRequired,
     fixedHeader: PropTypes.bool,
     rowClass: PropTypes.func,
-    onRowClick: PropTypes.func
+    onRowClick: PropTypes.func,
+    onRowMouseEnter: PropTypes.func,
+    onRowMouseLeave: PropTypes.func
 };
 
 KitchenTable.defaultProps = {
