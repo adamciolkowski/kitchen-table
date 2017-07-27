@@ -4,6 +4,7 @@ import flatMap from "lodash/flatMap";
 import identity from "lodash/identity";
 import isFunction from "lodash/isFunction";
 import times from "lodash/times";
+import orderBy from "lodash/orderBy";
 import sum from "lodash/sum";
 import "./KitchenTable.scss";
 
@@ -12,6 +13,10 @@ export default class KitchenTable extends Component {
     constructor(props) {
         super(props);
         this.adjustHeaderPosition = this.adjustHeaderPosition.bind(this);
+        this.state = {
+            sortColumn : null,
+            sortOrder: null
+        };
     }
 
     componentDidMount() {
@@ -91,15 +96,27 @@ export default class KitchenTable extends Component {
     }
 
     renderHeaderCell(column, rowSpan, idx) {
+        let isSortable = this.props.sortable && !column.subColumns;
         return (
-            <th
-                key={idx}
-                rowSpan={column.subColumns ? 1 : rowSpan}
-                colSpan={getColSpan(column)}
-            >
-                {isFunction(column.title) ? column.title() : column.title}
+            <th {...this.headerCellProps(column, rowSpan, idx, isSortable)}>
+                <div className="KitchenTable-header-wrapper">
+                    <div className="KitchenTable-header-content">
+                        {isFunction(column.title) ? column.title() : column.title}
+                    </div>
+                    {isSortable ? this.renderSortingArrows(column) : null}
+                </div>
             </th>
         );
+    }
+
+    headerCellProps(column, rowSpan, idx, isSortable) {
+        return {
+            key: idx,
+            className: isSortable ? 'KitchenTable-sortable' : null,
+            rowSpan: column.subColumns ? 1 : rowSpan,
+            colSpan: getColSpan(column),
+            onClick: isSortable ? () => this.onHeaderCellClick(column) : null
+        };
 
         function getColSpan(column) {
             let subColumns = column.subColumns;
@@ -109,12 +126,47 @@ export default class KitchenTable extends Component {
         }
     }
 
+    renderSortingArrows(column) {
+        let className = column === this.state.sortColumn ? 'KitchenTable-sort' : null;
+        return (
+            <div>
+                {this.renderSortingArrow('up', this.state.sortOrder === 'asc' ? className : null)}
+                {this.renderSortingArrow('down', this.state.sortOrder === 'desc' ? className : null)}
+            </div>
+        );
+    }
+
+    renderSortingArrow(suffix, className) {
+        let classes = ['KitchenTable-arrow', `KitchenTable-${suffix}`, className];
+        return <div className={classes.join(' ')}/>;
+    }
+
+    onHeaderCellClick(column) {
+        let order = this.sortOrder(column);
+        this.setState({sortColumn: column, sortOrder: order});
+    }
+
+    sortOrder(column) {
+        if(column !== this.state.sortColumn) {
+            return 'asc';
+        }
+        return this.state.sortOrder === 'asc' ? 'desc' : 'asc';
+    }
+
     renderBody() {
         return <tbody>{this.renderRows()}</tbody>;
     }
 
     renderRows() {
-        return this.props.data.map(this.renderRow.bind(this));
+        let data = this.getRows();
+        return data.map(this.renderRow.bind(this));
+    }
+
+    getRows() {
+        if (this.props.sortable && this.state.sortColumn) {
+            return orderBy(this.props.data, this.state.sortColumn.field, this.state.sortOrder);
+        }
+        return this.props.data;
     }
 
     renderRow(row, idx) {
@@ -197,6 +249,7 @@ KitchenTable.column = PropTypes.shape({
 KitchenTable.propTypes = {
     columns: PropTypes.arrayOf(KitchenTable.column).isRequired,
     data: PropTypes.arrayOf(PropTypes.object).isRequired,
+    sortable: PropTypes.bool,
     fixedHeader: PropTypes.bool,
     rowClass: PropTypes.func,
     onRowClick: PropTypes.func,
@@ -205,5 +258,6 @@ KitchenTable.propTypes = {
 };
 
 KitchenTable.defaultProps = {
-    fixedHeader: false
+    fixedHeader: false,
+    sortable: false
 };

@@ -2,6 +2,7 @@ import chai, {expect} from "chai";
 import React from "react";
 import TestUtils from "react-dom/test-utils";
 import KitchenTable from "./KitchenTable.jsx";
+import map from "lodash/map";
 
 it('can render data in table', () => {
     let data = [
@@ -175,7 +176,7 @@ it('can take function to determine header value', () => {
         <KitchenTable data={data} columns={columns}/>
     );
 
-    let th = TestUtils.findRenderedDOMComponentWithTag(component, 'th');
+    let th = TestUtils.findRenderedDOMComponentWithClass(component, 'KitchenTable-header-content');
 
     expect(th.innerHTML).to.equal('<span>Area</span>');
 });
@@ -329,4 +330,149 @@ it('can render sub-columns', () => {
     expect(headerCells[2].colSpan).to.equal('1');
     expect(headerCells[3].rowSpan).to.equal('1');
     expect(headerCells[3].colSpan).to.equal('1');
+});
+
+describe('sorting', () => {
+    it('does nothing on header cell click when sorting is disabled', () => {
+        let data = [
+            {letter: 'b'},
+            {letter: 'a'},
+            {letter: 'c'}
+        ];
+        const columns = [
+            {title: 'Letter', field: 'letter'}
+        ];
+        const component = TestUtils.renderIntoDocument(
+            <KitchenTable data={data} columns={columns}/>
+        );
+        let headerCells = TestUtils.scryRenderedDOMComponentsWithTag(component, 'th');
+        let firstHeaderCell = headerCells[0];
+        TestUtils.Simulate.click(firstHeaderCell);
+
+        expect(columnCellValues(component, 0)).to.deep.equal(['b', 'a', 'c']);
+    });
+
+    it('sorts table ascending when column header is clicked', () => {
+        let data = [
+            {letter: 'b'},
+            {letter: 'a'},
+            {letter: 'c'}
+        ];
+        const columns = [
+            {title: 'Letter', field: 'letter'}
+        ];
+        const component = TestUtils.renderIntoDocument(
+            <KitchenTable
+                data={data}
+                columns={columns}
+                sortable={true}
+            />
+        );
+        let headerCells = TestUtils.scryRenderedDOMComponentsWithTag(component, 'th');
+        let firstHeaderCell = headerCells[0];
+        TestUtils.Simulate.click(firstHeaderCell);
+
+        expect(columnCellValues(component, 0)).to.deep.equal(['a', 'b', 'c']);
+    });
+
+    it('sorts table descending when column header is clicked twice', () => {
+        let data = [
+            {letter: 'b'},
+            {letter: 'a'},
+            {letter: 'c'}
+        ];
+        const columns = [
+            {title: 'Letter', field: 'letter'}
+        ];
+        const component = TestUtils.renderIntoDocument(
+            <KitchenTable
+                data={data}
+                columns={columns}
+                sortable={true}
+            />
+        );
+        let headerCells = TestUtils.scryRenderedDOMComponentsWithTag(component, 'th');
+        let firstHeaderCell = headerCells[0];
+        TestUtils.Simulate.click(firstHeaderCell);
+        TestUtils.Simulate.click(firstHeaderCell);
+
+        expect(columnCellValues(component, 0)).to.deep.equal(['c', 'b', 'a']);
+    });
+
+    it('sorts column ascending on header cell click when different column was previously sorted', () => {
+        let data = [
+            {letter: 'b', number: 1},
+            {letter: 'a', number: 3},
+            {letter: 'c', number: 2}
+        ];
+        const columns = [
+            {title: 'Letter', field: 'letter'},
+            {title: 'Number', field: 'number'}
+        ];
+        const component = TestUtils.renderIntoDocument(
+            <KitchenTable
+                data={data}
+                columns={columns}
+                sortable={true}
+            />
+        );
+        let headerCells = TestUtils.scryRenderedDOMComponentsWithTag(component, 'th');
+        TestUtils.Simulate.click(headerCells[0]);
+        TestUtils.Simulate.click(headerCells[1]);
+
+        expect(columnCellValues(component, 1)).to.deep.equal(['1', '2', '3']);
+    });
+
+    it('adds `KitchenTable-sortable` class to sortable headers', () => {
+        let data = [
+            {letter: 'b'},
+            {letter: 'a'},
+            {letter: 'c'}
+        ];
+        const columns = [
+            {title: 'Letter', field: 'letter'}
+        ];
+        const component = TestUtils.renderIntoDocument(
+            <KitchenTable
+                data={data}
+                columns={columns}
+                sortable={true}
+            />
+        );
+        let headerCells = TestUtils.scryRenderedDOMComponentsWithTag(component, 'th');
+
+        expect(headerCells[0].className).to.equal('KitchenTable-sortable');
+    });
+
+    it("doesn't sort columns that contain sub-columns", () => {
+        let data = [
+            {letter: 'b', number: 1},
+            {letter: 'a', number: 3},
+            {letter: 'c', number: 2}
+        ];
+        const columns = [
+            {
+                title: 'Items',
+                subColumns: [
+                    {title: 'Letter', field: 'letter'},
+                    {title: 'Number', field: 'number'}
+                ]
+            }
+        ];
+        const component = TestUtils.renderIntoDocument(
+            <KitchenTable
+                data={data}
+                columns={columns}
+                sortable={true}
+            />
+        );
+        let headerCells = TestUtils.scryRenderedDOMComponentsWithTag(component, 'th');
+        expect(headerCells[0].className).to.equal('');
+    });
+
+    function columnCellValues(component, column) {
+        let rows = TestUtils.findRenderedDOMComponentWithTag(component, 'table')
+            .querySelectorAll('tbody tr');
+        return map(rows, row => row.querySelectorAll('td')[column].textContent);
+    }
 });

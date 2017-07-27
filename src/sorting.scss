@@ -1,0 +1,39 @@
+$arrow-side: 0.3em;
+
+.KitchenTable-sortable {
+  cursor: pointer;
+}
+
+.KitchenTable-header-content {
+  flex-grow: 1;
+}
+
+.KitchenTable-header-wrapper {
+  display: flex;
+}
+
+.KitchenTable-arrow {
+  margin: 0 auto;
+  border: solid black;
+
+  $thickness: $arrow-side / 3;
+  border-width: 0 $thickness $thickness 0;
+  width: $arrow-side;
+  height: $arrow-side;
+}
+
+.KitchenTable-up {
+  transform: rotate(-135deg);
+}
+
+.KitchenTable-down {
+  transform: rotate(45deg);
+}
+
+.KitchenTable-sort {
+  $thickness: 0.2em;
+  border-width: 0 $thickness $thickness 0;
+  $number: 1.2;
+  width: $arrow-side * $number;
+  height: $arrow-side * $number;
+}
