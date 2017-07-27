@@ -470,6 +470,32 @@ describe('sorting', () => {
         expect(headerCells[0].className).to.equal('');
     });
 
+    it('triggers a callback on every sort', done => {
+        let data = [
+            {letter: 'b'},
+            {letter: 'a'},
+            {letter: 'c'}
+        ];
+        const columns = [
+            {title: 'Letter', field: 'letter'}
+        ];
+        const component = TestUtils.renderIntoDocument(
+            <KitchenTable
+                data={data}
+                columns={columns}
+                sortable={true}
+                onSortEnd={onSortEnd}
+            />
+        );
+        let headerCells = TestUtils.scryRenderedDOMComponentsWithTag(component, 'th');
+        TestUtils.Simulate.click(headerCells[0]);
+
+        function onSortEnd(column) {
+            expect(column).to.deep.equal({title: 'Letter', field: 'letter'});
+            done();
+        }
+    });
+
     function columnCellValues(component, column) {
         let rows = TestUtils.findRenderedDOMComponentWithTag(component, 'table')
             .querySelectorAll('tbody tr');

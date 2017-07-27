@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import flatMap from "lodash/flatMap";
 import identity from "lodash/identity";
 import isFunction from "lodash/isFunction";
+import noop from "lodash/noop";
 import times from "lodash/times";
 import orderBy from "lodash/orderBy";
 import sum from "lodash/sum";
@@ -143,7 +144,9 @@ export default class KitchenTable extends Component {
 
     onHeaderCellClick(column) {
         let order = this.sortOrder(column);
-        this.setState({sortColumn: column, sortOrder: order});
+        this.setState({sortColumn: column, sortOrder: order}, () => {
+            this.props.onSortEnd(column);
+        });
     }
 
     sortOrder(column) {
@@ -250,6 +253,7 @@ KitchenTable.propTypes = {
     columns: PropTypes.arrayOf(KitchenTable.column).isRequired,
     data: PropTypes.arrayOf(PropTypes.object).isRequired,
     sortable: PropTypes.bool,
+    onSortEnd: PropTypes.func,
     fixedHeader: PropTypes.bool,
     rowClass: PropTypes.func,
     onRowClick: PropTypes.func,
@@ -259,5 +263,6 @@ KitchenTable.propTypes = {
 
 KitchenTable.defaultProps = {
     fixedHeader: false,
-    sortable: false
+    sortable: false,
+    onSortEnd: noop
 };
