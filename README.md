@@ -16,7 +16,8 @@ Component takes the following parameters:
 - `fixedHeader` boolean specifying if table header should be fixed. Defaults to `false`.
 - `sortable` boolean specifying if table can be sorted. Defaults to `false`. Only columns that contain no sub-columns 
 can be sorted.
-- `onSortEnd` function called every time table is sorted. It has one arguments: column that was sorted.
+- `onSortEnd` function called every time table is sorted. It has 2 arguments: column that was sorted, and 
+sort order ('asc', 'desc').
 - `rowClass` function that returns a css class to be applied on table rows. It takes one argument: table row.
 - `onRowClick` function called whenever table row is clicked. It has 3 arguments: row, zero-based row index 
 and event object.

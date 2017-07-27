@@ -145,7 +145,7 @@ export default class KitchenTable extends Component {
     onHeaderCellClick(column) {
         let order = this.sortOrder(column);
         this.setState({sortColumn: column, sortOrder: order}, () => {
-            this.props.onSortEnd(column);
+            this.props.onSortEnd(column, order);
         });
     }
 

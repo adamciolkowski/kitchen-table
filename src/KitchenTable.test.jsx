@@ -490,8 +490,9 @@ describe('sorting', () => {
         let headerCells = TestUtils.scryRenderedDOMComponentsWithTag(component, 'th');
         TestUtils.Simulate.click(headerCells[0]);
 
-        function onSortEnd(column) {
+        function onSortEnd(column, order) {
             expect(column).to.deep.equal({title: 'Letter', field: 'letter'});
+            expect(order).to.equal('asc');
             done();
         }
     });
