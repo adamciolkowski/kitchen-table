@@ -1,4 +1,6 @@
 $arrow-side: 0.3em;
+$arrow-color: black;
+$transparency: 0.3;
 
 .KitchenTable-sortable {
   cursor: pointer;
@@ -13,27 +15,20 @@ $arrow-side: 0.3em;
 }
 
 .KitchenTable-arrow {
-  margin: 0 auto;
-  border: solid black;
-
-  $thickness: $arrow-side / 3;
-  border-width: 0 $thickness $thickness 0;
-  width: $arrow-side;
-  height: $arrow-side;
+  border-right: $arrow-side solid transparent;
+  border-left: $arrow-side solid transparent;
+  margin: 0.15em;
 }
 
 .KitchenTable-up {
-  transform: rotate(-135deg);
+  border-bottom: $arrow-side solid rgba($arrow-color, $transparency);
 }
 
 .KitchenTable-down {
-  transform: rotate(45deg);
+  border-top: $arrow-side solid rgba($arrow-color, $transparency);
 }
 
 .KitchenTable-sort {
-  $thickness: 0.2em;
-  border-width: 0 $thickness $thickness 0;
-  $number: 1.2;
-  width: $arrow-side * $number;
-  height: $arrow-side * $number;
+  border-bottom-color: $arrow-color;
+  border-top-color: $arrow-color;
 }
