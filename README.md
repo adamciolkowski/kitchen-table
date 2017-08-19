@@ -200,6 +200,12 @@ ReactDOM.render(
 );
 ```
 
+### Styles
+
+In all the tables I've worked with I had to fiddle with and override default styles to match styling 
+of other components on a page. This is the reason why KitchenTable comes with no built-in styles. 
+You can easily use your own or use one from examples. 
+
 ### Fixed header and borders
 
 Fixed header is implemented by applying transformation on table header.
