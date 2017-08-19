@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import PropTypes from "prop-types";
+import SortableColumnDecorator from "./SortableColumnDecorator";
 import flatMap from "lodash/flatMap";
 import identity from "lodash/identity";
 import isFunction from "lodash/isFunction";
@@ -7,7 +8,6 @@ import noop from "lodash/noop";
 import times from "lodash/times";
 import orderBy from "lodash/orderBy";
 import sum from "lodash/sum";
-import "./KitchenTable.scss";
 
 export default class KitchenTable extends Component {
 
@@ -100,14 +100,24 @@ export default class KitchenTable extends Component {
         let isSortable = this.props.sortable && !column.subColumns;
         return (
             <th {...this.headerCellProps(column, rowSpan, idx, isSortable)}>
-                <div className="KitchenTable-header-wrapper">
-                    <div className="KitchenTable-header-content">
-                        {isFunction(column.title) ? column.title() : column.title}
-                    </div>
-                    {isSortable ? this.renderSortingArrows(column) : null}
-                </div>
+                {this.renderHeaderCellContent(column, isSortable)}
             </th>
         );
+    }
+
+    renderHeaderCellContent(column, isSortable) {
+        let title = isFunction(column.title) ? column.title() : column.title;
+        if (isSortable) {
+            return (
+                <SortableColumnDecorator
+                    isSorted={column === this.state.sortColumn}
+                    sortOrder={this.state.sortOrder}
+                >
+                    {title}
+                </SortableColumnDecorator>
+            );
+        }
+        return title;
     }
 
     headerCellProps(column, rowSpan, idx, isSortable) {
@@ -125,21 +135,6 @@ export default class KitchenTable extends Component {
                 return 1;
             return sum(subColumns.map(getColSpan));
         }
-    }
-
-    renderSortingArrows(column) {
-        let className = column === this.state.sortColumn ? 'KitchenTable-sort' : null;
-        return (
-            <div>
-                {this.renderSortingArrow('up', this.state.sortOrder === 'asc' ? className : null)}
-                {this.renderSortingArrow('down', this.state.sortOrder === 'desc' ? className : null)}
-            </div>
-        );
-    }
-
-    renderSortingArrow(suffix, className) {
-        let classes = ['KitchenTable-arrow', `KitchenTable-${suffix}`, className];
-        return <div className={classes.join(' ')}/>;
     }
 
     onHeaderCellClick(column) {

@@ -176,7 +176,7 @@ it('can take function to determine header value', () => {
         <KitchenTable data={data} columns={columns}/>
     );
 
-    let th = TestUtils.findRenderedDOMComponentWithClass(component, 'KitchenTable-header-content');
+    let th = TestUtils.findRenderedDOMComponentWithTag(component, 'th');
 
     expect(th.innerHTML).to.equal('<span>Area</span>');
 });
