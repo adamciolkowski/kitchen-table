@@ -3,3 +3,6 @@
 src
 mocks
 webpack.config.js
+tsconfig.json
+preprocessor.js
+out

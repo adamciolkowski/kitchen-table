@@ -1,7 +1,7 @@
 var path = require('path');
 
 module.exports = {
-    entry: './src/KitchenTable.jsx',
+    entry: './src/KitchenTable.tsx',
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: 'KitchenTable.js',
@@ -10,11 +10,14 @@ module.exports = {
     externals: {
         "react": 'react'
     },
+    resolve: {
+        extensions: ['.js', '.ts', '.tsx']
+    },
     module: {
         rules: [
             {
-                test: /\.jsx?/,
-                loader: 'babel-loader'
+                test: /\.tsx?/,
+                use: 'ts-loader'
             },
             {
                 test: /\.scss$/,

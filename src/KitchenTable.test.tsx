@@ -1,8 +1,9 @@
-import chai, {expect} from "chai";
-import React from "react";
-import TestUtils from "react-dom/test-utils";
-import KitchenTable from "./KitchenTable.jsx";
-import map from "lodash/map";
+import {expect} from "chai";
+import * as React from "react";
+import {Component} from "react";
+import * as TestUtils from "react-dom/test-utils";
+import KitchenTable from "./KitchenTable";
+import map = require("lodash/map");
 
 it('can render data in table', () => {
     let data = [
@@ -14,7 +15,7 @@ it('can render data in table', () => {
     ];
     const component = TestUtils.renderIntoDocument(
         <KitchenTable data={data} columns={columns}/>
-    );
+    ) as Component;
 
     let th = TestUtils.scryRenderedDOMComponentsWithTag(component, 'th');
 
@@ -38,7 +39,7 @@ it('can use custom renderer for cell', () => {
     }];
     const component = TestUtils.renderIntoDocument(
         <KitchenTable data={data} columns={columns}/>
-    );
+    ) as Component;
 
     let td = TestUtils.findRenderedDOMComponentWithTag(component, 'td');
 
@@ -56,7 +57,7 @@ it('can use values from the same row in custom renderer', () => {
     ];
     const component = TestUtils.renderIntoDocument(
         <KitchenTable data={data} columns={columns}/>
-    );
+    ) as Component;
 
     let td = TestUtils.findRenderedDOMComponentWithTag(component, 'td');
 
@@ -72,7 +73,7 @@ it('can take function to determine which property will be used as cell value', (
     ];
     const component = TestUtils.renderIntoDocument(
         <KitchenTable data={data} columns={columns}/>
-    );
+    ) as Component;
 
     let td = TestUtils.findRenderedDOMComponentWithTag(component, 'td');
 
@@ -88,7 +89,7 @@ it('can use default value for nulls', () => {
     }];
     const component = TestUtils.renderIntoDocument(
         <KitchenTable data={data} columns={columns}/>
-    );
+    ) as Component;
 
     let td = TestUtils.findRenderedDOMComponentWithTag(component, 'td');
 
@@ -104,7 +105,7 @@ it('can use function to determine default value for nulls', () => {
     }];
     const component = TestUtils.renderIntoDocument(
         <KitchenTable data={data} columns={columns}/>
-    );
+    ) as Component;
 
     let td = TestUtils.findRenderedDOMComponentWithTag(component, 'td');
 
@@ -120,7 +121,7 @@ it('can set custom css class on cell', () => {
     }];
     const component = TestUtils.renderIntoDocument(
         <KitchenTable data={data} columns={columns}/>
-    );
+    ) as Component;
 
     let td = TestUtils.findRenderedDOMComponentWithTag(component, 'td');
 
@@ -136,7 +137,7 @@ it('can take function to determine css class for cell', () => {
     }];
     const component = TestUtils.renderIntoDocument(
         <KitchenTable data={data} columns={columns}/>
-    );
+    ) as Component;
 
     let td = TestUtils.scryRenderedDOMComponentsWithTag(component, 'td');
 
@@ -156,7 +157,7 @@ it('can use values present in other columns to determine css class for cell', ()
     ];
     const component = TestUtils.renderIntoDocument(
         <KitchenTable data={data} columns={columns}/>
-    );
+    ) as Component;
 
     let td = TestUtils.scryRenderedDOMComponentsWithTag(component, 'td');
 
@@ -174,7 +175,7 @@ it('can take function to determine header value', () => {
     ];
     const component = TestUtils.renderIntoDocument(
         <KitchenTable data={data} columns={columns}/>
-    );
+    ) as Component;
 
     let th = TestUtils.findRenderedDOMComponentWithTag(component, 'th');
 
@@ -194,7 +195,7 @@ it('can call a function when a row is clicked', done => {
             columns={columns}
             onRowClick={handleRowClick}
         />
-    );
+    ) as Component;
 
     let rows = TestUtils.scryRenderedDOMComponentsWithTag(component, 'tr');
     let firstDataRow = rows[1];
@@ -220,7 +221,7 @@ it('does nothing on row click if row click callback is not defined', () => {
             data={data}
             columns={columns}
         />
-    );
+    ) as Component;
 
     let rows = TestUtils.scryRenderedDOMComponentsWithTag(component, 'tr');
     let firstDataRow = rows[1];
@@ -240,7 +241,7 @@ it('can call a function when mouse enters row', done => {
             columns={columns}
             onRowMouseEnter={handleMouseEnter}
         />
-    );
+    ) as Component;
 
     let rows = TestUtils.scryRenderedDOMComponentsWithTag(component, 'tr');
     let firstDataRow = rows[1];
@@ -267,7 +268,7 @@ it('can call a function when mouse leaves row', done => {
             columns={columns}
             onRowMouseLeave={handleMouseLeave}
         />
-    );
+    ) as Component;
 
     let rows = TestUtils.scryRenderedDOMComponentsWithTag(component, 'tr');
     let firstDataRow = rows[1];
@@ -295,7 +296,7 @@ it('can apply css class on specific rows', () => {
             columns={columns}
             rowClass={city => city.country === 'China' ? 'highlighted' : null}
         />
-    );
+    ) as Component;
 
     let rows = TestUtils.scryRenderedDOMComponentsWithTag(component, 'tr');
     expect(rows[1].className).to.equal('highlighted');
@@ -319,8 +320,8 @@ it('can render sub-columns', () => {
     ];
     const component = TestUtils.renderIntoDocument(
         <KitchenTable data={data} columns={columns} />
-    );
-    let headerCells = TestUtils.scryRenderedDOMComponentsWithTag(component, 'th');
+    ) as Component;
+    let headerCells = TestUtils.scryRenderedDOMComponentsWithTag(component, 'th') as HTMLTableHeaderCellElement[];
     expect(headerCells[0].rowSpan).to.equal('2');
     expect(headerCells[0].colSpan).to.equal('1');
     expect(headerCells[1].rowSpan).to.equal('1');
@@ -344,7 +345,7 @@ describe('sorting', () => {
         ];
         const component = TestUtils.renderIntoDocument(
             <KitchenTable data={data} columns={columns}/>
-        );
+        ) as Component;
         let headerCells = TestUtils.scryRenderedDOMComponentsWithTag(component, 'th');
         let firstHeaderCell = headerCells[0];
         TestUtils.Simulate.click(firstHeaderCell);
@@ -367,7 +368,7 @@ describe('sorting', () => {
                 columns={columns}
                 sortable={true}
             />
-        );
+        ) as Component;
         let headerCells = TestUtils.scryRenderedDOMComponentsWithTag(component, 'th');
         let firstHeaderCell = headerCells[0];
         TestUtils.Simulate.click(firstHeaderCell);
@@ -390,7 +391,7 @@ describe('sorting', () => {
                 columns={columns}
                 sortable={true}
             />
-        );
+        ) as Component;
         let headerCells = TestUtils.scryRenderedDOMComponentsWithTag(component, 'th');
         let firstHeaderCell = headerCells[0];
         TestUtils.Simulate.click(firstHeaderCell);
@@ -415,7 +416,7 @@ describe('sorting', () => {
                 columns={columns}
                 sortable={true}
             />
-        );
+        ) as Component;
         let headerCells = TestUtils.scryRenderedDOMComponentsWithTag(component, 'th');
         TestUtils.Simulate.click(headerCells[0]);
         TestUtils.Simulate.click(headerCells[1]);
@@ -438,7 +439,7 @@ describe('sorting', () => {
                 columns={columns}
                 sortable={true}
             />
-        );
+        ) as Component;
         let headerCells = TestUtils.scryRenderedDOMComponentsWithTag(component, 'th');
 
         expect(headerCells[0].className).to.equal('KitchenTable-sortable');
@@ -465,7 +466,7 @@ describe('sorting', () => {
                 columns={columns}
                 sortable={true}
             />
-        );
+        ) as Component;
         let headerCells = TestUtils.scryRenderedDOMComponentsWithTag(component, 'th');
         expect(headerCells[0].className).to.equal('');
     });
@@ -486,7 +487,7 @@ describe('sorting', () => {
                 sortable={true}
                 onSortEnd={onSortEnd}
             />
-        );
+        ) as Component;
         let headerCells = TestUtils.scryRenderedDOMComponentsWithTag(component, 'th');
         TestUtils.Simulate.click(headerCells[0]);
 

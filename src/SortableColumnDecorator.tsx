@@ -1,8 +1,13 @@
-import React from "react";
-import PropTypes from "prop-types";
+import * as React from "react";
+import {SortOrder} from "./SortOrder";
 import "./SortableColumnDecorator.scss";
 
-export default class SortableColumnDecorator extends React.Component {
+interface Props {
+    isSorted: boolean,
+    sortOrder: SortOrder
+}
+
+export default class SortableColumnDecorator extends React.Component<Props, {}> {
 
     render() {
         return (
@@ -17,10 +22,11 @@ export default class SortableColumnDecorator extends React.Component {
 
     renderSortingArrows() {
         let className = this.props.isSorted ? 'KitchenTable-sort' : null;
+        let isAscending = this.props.sortOrder === 'asc';
         return (
             <div>
-                {this.renderSortingArrow('up', this.props.sortOrder === 'asc' ? className : null)}
-                {this.renderSortingArrow('down', this.props.sortOrder === 'desc' ? className : null)}
+                {this.renderSortingArrow('up', isAscending ? className : null)}
+                {this.renderSortingArrow('down', !isAscending ? className : null)}
             </div>
         );
     }
@@ -30,9 +36,3 @@ export default class SortableColumnDecorator extends React.Component {
         return <div className={classes.join(' ')}/>;
     }
 }
-
-SortableColumnDecorator.propTypes = {
-    children: PropTypes.node.isRequired,
-    isSorted: PropTypes.bool.isRequired,
-    sortOrder: PropTypes.string
-};

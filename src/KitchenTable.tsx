@@ -1,15 +1,45 @@
-import React, {Component} from "react";
-import PropTypes from "prop-types";
+import * as React from "react";
 import SortableColumnDecorator from "./SortableColumnDecorator";
-import flatMap from "lodash/flatMap";
-import identity from "lodash/identity";
-import isFunction from "lodash/isFunction";
-import noop from "lodash/noop";
-import times from "lodash/times";
-import orderBy from "lodash/orderBy";
-import sum from "lodash/sum";
+import {Column} from "./Column";
+import {Row} from "./Row";
+import {SortOrder} from "./SortOrder";
+import flatMap = require("lodash/flatMap");
+import identity = require("lodash/identity");
+import isFunction = require("lodash/isFunction");
+import noop = require("lodash/noop");
+import orderBy = require("lodash/orderBy");
+import times = require("lodash/times");
+import sum = require("lodash/sum");
 
-export default class KitchenTable extends Component {
+type RowCallback = (row: Row, rowIndex: number, event: Event) => void;
+
+interface Props {
+    columns: Column[],
+    data: Row[],
+    sortable?: boolean,
+    onSortEnd?: (column: Column, order: SortOrder) => void,
+    fixedHeader?: boolean,
+    rowClass?: (row: Row) => string,
+    onRowClick?: RowCallback,
+    onRowMouseEnter?: RowCallback,
+    onRowMouseLeave?: RowCallback
+}
+
+interface State {
+    sortColumn: Column,
+    sortOrder: SortOrder
+}
+
+export default class KitchenTable extends React.Component<Props, State> {
+
+    private static defaultProps: Partial<Props> = {
+        fixedHeader: false,
+        sortable: false,
+        onSortEnd: noop
+    };
+
+    private table: HTMLTableElement;
+    private thead: HTMLTableSectionElement;
 
     constructor(props) {
         super(props);
@@ -63,7 +93,7 @@ export default class KitchenTable extends Component {
         let rowSpan = getHeaderRowSpan(this.props.columns, 1);
         return times(rowSpan).map(l => this.renderHeaderRow(l, rowSpan));
 
-        function getHeaderRowSpan(columns, level) {
+        function getHeaderRowSpan(columns: Column[], level: number) {
             let l = level;
             for(let i = 0; i < columns.length; i++) {
                 let c = columns[i];
@@ -83,7 +113,7 @@ export default class KitchenTable extends Component {
             </tr>
         );
 
-        function columnsFor(level) {
+        function columnsFor(level: number) {
             let columns = this.props.columns;
             times(level, () => {
                 columns = flatMap(columns, c => c.subColumns).filter(sc => sc);
@@ -92,11 +122,11 @@ export default class KitchenTable extends Component {
         }
     }
 
-    renderHeaderCells(columns, rowSpan) {
+    renderHeaderCells(columns: Column[], rowSpan: number) {
         return columns.map((column, idx) => this.renderHeaderCell(column, rowSpan, idx));
     }
 
-    renderHeaderCell(column, rowSpan, idx) {
+    renderHeaderCell(column: Column, rowSpan, idx) {
         let isSortable = this.props.sortable && !column.subColumns;
         return (
             <th {...this.headerCellProps(column, rowSpan, idx, isSortable)}>
@@ -120,7 +150,7 @@ export default class KitchenTable extends Component {
         return title;
     }
 
-    headerCellProps(column, rowSpan, idx, isSortable) {
+    headerCellProps(column: Column, rowSpan, idx, isSortable: boolean) {
         return {
             key: idx,
             className: isSortable ? 'KitchenTable-sortable' : null,
@@ -129,7 +159,7 @@ export default class KitchenTable extends Component {
             onClick: isSortable ? () => this.onHeaderCellClick(column) : null
         };
 
-        function getColSpan(column) {
+        function getColSpan(column: Column) {
             let subColumns = column.subColumns;
             if(!subColumns)
                 return 1;
@@ -137,14 +167,14 @@ export default class KitchenTable extends Component {
         }
     }
 
-    onHeaderCellClick(column) {
+    onHeaderCellClick(column: Column) {
         let order = this.sortOrder(column);
         this.setState({sortColumn: column, sortOrder: order}, () => {
             this.props.onSortEnd(column, order);
         });
     }
 
-    sortOrder(column) {
+    sortOrder(column: Column): SortOrder {
         if(column !== this.state.sortColumn) {
             return 'asc';
         }
@@ -160,14 +190,14 @@ export default class KitchenTable extends Component {
         return data.map(this.renderRow.bind(this));
     }
 
-    getRows() {
+    getRows(): Row[] {
         if (this.props.sortable && this.state.sortColumn) {
             return orderBy(this.props.data, this.state.sortColumn.field, this.state.sortOrder);
         }
         return this.props.data;
     }
 
-    renderRow(row, idx) {
+    renderRow(row: Row, idx) {
         let rowProps = {
             key: idx,
             className: this.props.rowClass ? this.props.rowClass(row) : null,
@@ -183,19 +213,19 @@ export default class KitchenTable extends Component {
             </tr>
         );
 
-        function delegate(callback, row, idx) {
+        function delegate(callback: RowCallback, row, idx) {
             return callback ? e => callback(row, idx, e) : null;
         }
     }
 
-    renderColumnCells(row, column, idx) {
+    renderColumnCells(row: Row, column: Column, idx) {
         if(column.subColumns) {
             return column.subColumns.map((sc, i) => this.renderCell(row, sc, i));
         }
         return this.renderCell(row, column, idx);
     }
 
-    renderCell(row, column, idx) {
+    renderCell(row, column: Column, idx) {
         return (
             <td
                 key={idx}
@@ -204,14 +234,14 @@ export default class KitchenTable extends Component {
         );
     }
 
-    className(row, column) {
+    className(row, column: Column) {
         if(isFunction(column.className)) {
             return column.className(this.rawCellValue(row, column), row);
         }
         return column.className;
     }
 
-    displayedCellValue(row, column) {
+    displayedCellValue(row, column: Column) {
         let rawValue = this.rawCellValue(row, column);
         if (rawValue === null) {
             return this.defaultCellValue(column);
@@ -220,44 +250,17 @@ export default class KitchenTable extends Component {
         return renderer(rawValue, row);
     }
 
-    defaultCellValue(column) {
+    defaultCellValue(column: Column) {
         if (isFunction(column.defaultValue)) {
             return column.defaultValue();
         }
         return column.defaultValue;
     }
 
-    rawCellValue(row, column) {
+    rawCellValue(row: Row, column: Column) {
         if(isFunction(column.field)) {
             return column.field(row);
         }
         return row[column.field];
     }
 }
-
-KitchenTable.column = PropTypes.shape({
-    title: PropTypes.oneOfType([PropTypes.string, PropTypes.func]).isRequired,
-    field: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
-    renderer: PropTypes.func,
-    defaultValue: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
-    className: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
-    subColumns: PropTypes.array
-});
-
-KitchenTable.propTypes = {
-    columns: PropTypes.arrayOf(KitchenTable.column).isRequired,
-    data: PropTypes.arrayOf(PropTypes.object).isRequired,
-    sortable: PropTypes.bool,
-    onSortEnd: PropTypes.func,
-    fixedHeader: PropTypes.bool,
-    rowClass: PropTypes.func,
-    onRowClick: PropTypes.func,
-    onRowMouseEnter: PropTypes.func,
-    onRowMouseLeave: PropTypes.func
-};
-
-KitchenTable.defaultProps = {
-    fixedHeader: false,
-    sortable: false,
-    onSortEnd: noop
-};
