@@ -24,7 +24,7 @@ export default class SortableColumnDecorator extends React.Component<Props, {}> 
         let className = this.props.isSorted ? 'KitchenTable-sort' : null;
         let isAscending = this.props.sortOrder === 'asc';
         return (
-            <div>
+            <div className="KitchenTable-arrows">
                 {this.renderSortingArrow('up', isAscending ? className : null)}
                 {this.renderSortingArrow('down', !isAscending ? className : null)}
             </div>

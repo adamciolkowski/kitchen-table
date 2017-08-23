@@ -14,10 +14,16 @@ $transparency: 0.3;
   display: flex;
 }
 
+.KitchenTable-arrows {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
 .KitchenTable-arrow {
   border-right: $arrow-side solid transparent;
   border-left: $arrow-side solid transparent;
-  margin: 0.15em;
+  margin: 0.05em 0.15em;
 }
 
 .KitchenTable-up {
