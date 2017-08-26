@@ -9,7 +9,7 @@
     "watch": "webpack --watch",
     "test": "jest",
     "test-watch": "jest --watch",
-    "prepublish": "npm run clean && npm run test && npm run build"
+    "prepublishOnly": "npm run clean && npm run test && npm run build"
   },
   "repository": {
     "type": "git",
