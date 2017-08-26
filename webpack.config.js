@@ -1,14 +1,20 @@
 var path = require('path');
 
 module.exports = {
-    entry: './src/KitchenTable.tsx',
+    entry: './src/index',
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: 'KitchenTable.js',
-        libraryTarget: 'commonjs2'
+        library: 'KitchenTable',
+        libraryTarget: 'umd'
     },
     externals: {
-        "react": 'react'
+        "react": {
+            amd: 'react',
+            commonjs: 'react',
+            commonjs2: 'react',
+            root: 'React'
+        }
     },
     resolve: {
         extensions: ['.js', '.ts', '.tsx']

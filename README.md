@@ -4,9 +4,21 @@ Extensible table table component for React.
 
 ### Installation
 
-Using npm:
+##### Using npm:
 
 `$ npm install kitchen-table --save`
+
+##### Using plain JavaScript:
+
+1. Clone the repository and build the project to get the latest version: 
+
+```
+$ git clone https://github.com/adamciolkowski/kitchen-table
+$ npm install
+$ npm run build
+```
+
+2. Include `dist/KitchenTable.js` file in your project.
 
 ### Usage
 
