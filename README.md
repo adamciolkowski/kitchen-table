@@ -30,13 +30,7 @@ Component takes the following parameters:
 can be sorted.
 - `onSortEnd` function called every time table is sorted. It has 2 arguments: column that was sorted, and 
 sort order ('asc', 'desc').
-- `rowClass` function that returns a css class to be applied on table rows. It takes one argument: table row.
-- `onRowClick` function called whenever table row is clicked. It has 3 arguments: row, zero-based row index 
-and event object.
-- `onRowMouseEnter` function called whenever a `mouseenter` event is triggered on row. It has 3 arguments: row, zero-based row index 
-and event object.
-- `onRowMouseLeave` function called whenever a `mouseleave` event is triggered on row. It has 3 arguments: row, zero-based row index 
-and event object.
+- `rowProps` properties to be applied on every row in a table. See [Row properties](#row-properties)
 
 #### Column properties
 
@@ -211,6 +205,16 @@ ReactDOM.render(
     document.getElementById('table')
 );
 ```
+
+#### Row properties
+- `className` function that returns a css class to be applied on table rows. It takes one argument: table row.
+- `onClick` function called whenever table row is clicked. It has 3 arguments: row, zero-based row index 
+and event object.
+- `onMouseEnter` function called whenever a `mouseenter` event is triggered on row. It has 3 arguments: row, zero-based row index 
+and event object.
+- `onMouseLeave` function called whenever a `mouseleave` event is triggered on row. It has 3 arguments: row, zero-based row index 
+and event object.
+
 
 ### Styles
 
