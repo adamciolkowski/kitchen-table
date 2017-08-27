@@ -19,10 +19,14 @@ interface Props {
     sortable?: boolean,
     onSortEnd?: (column: Column, order: SortOrder) => void,
     fixedHeader?: boolean,
-    rowClass?: (row: Row) => string,
-    onRowClick?: RowCallback,
-    onRowMouseEnter?: RowCallback,
-    onRowMouseLeave?: RowCallback
+    rowProps?: RowProps
+}
+
+interface RowProps {
+    className?: (row: Row) => string,
+    onClick?: RowCallback,
+    onMouseEnter?: RowCallback,
+    onMouseLeave?: RowCallback
 }
 
 interface State {
@@ -35,7 +39,8 @@ export default class KitchenTable extends React.Component<Props, State> {
     private static defaultProps: Partial<Props> = {
         fixedHeader: false,
         sortable: false,
-        onSortEnd: noop
+        onSortEnd: noop,
+        rowProps: {}
     };
 
     private table: HTMLTableElement;
@@ -198,12 +203,13 @@ export default class KitchenTable extends React.Component<Props, State> {
     }
 
     renderRow(row: Row, idx) {
+        let props = this.props.rowProps;
         let rowProps = {
             key: idx,
-            className: this.props.rowClass ? this.props.rowClass(row) : null,
-            onClick: delegate(this.props.onRowClick, row, idx),
-            onMouseEnter: delegate(this.props.onRowMouseEnter, row, idx),
-            onMouseLeave: delegate(this.props.onRowMouseLeave, row, idx)
+            className: props.className ? props.className(row) : null,
+            onClick: delegate(props.onClick, row, idx),
+            onMouseEnter: delegate(props.onMouseEnter, row, idx),
+            onMouseLeave: delegate(props.onMouseLeave, row, idx)
         };
         return (
             <tr {...rowProps}>

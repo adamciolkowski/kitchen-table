@@ -193,7 +193,9 @@ it('can call a function when a row is clicked', done => {
         <KitchenTable
             data={data}
             columns={columns}
-            onRowClick={handleRowClick}
+            rowProps={{
+                onClick: handleRowClick
+            }}
         />
     ) as Component;
 
@@ -239,7 +241,9 @@ it('can call a function when mouse enters row', done => {
         <KitchenTable
             data={data}
             columns={columns}
-            onRowMouseEnter={handleMouseEnter}
+            rowProps={{
+                onMouseEnter: handleMouseEnter
+            }}
         />
     ) as Component;
 
@@ -266,7 +270,9 @@ it('can call a function when mouse leaves row', done => {
         <KitchenTable
             data={data}
             columns={columns}
-            onRowMouseLeave={handleMouseLeave}
+            rowProps={{
+                onMouseLeave: handleMouseLeave
+            }}
         />
     ) as Component;
 
@@ -294,7 +300,9 @@ it('can apply css class on specific rows', () => {
         <KitchenTable
             data={data}
             columns={columns}
-            rowClass={city => city.country === 'China' ? 'highlighted' : null}
+            rowProps={{
+                className: city => city.country === 'China' ? 'highlighted' : null
+            }}
         />
     ) as Component;
 
