@@ -167,6 +167,49 @@ describe('rendering', () => {
         expect(td[1].className).to.equal('');
     });
 
+    it('can take function to determine styles for cell', () => {
+        const data = [{color: 'red'}, {color: 'blue'}];
+        const columns = [{
+            title: 'Color',
+            field: 'color',
+            style: color => {
+                return {backgroundColor: color};
+            }
+        }];
+        const component = TestUtils.renderIntoDocument(
+            <KitchenTable data={data} columns={columns}/>
+        ) as Component;
+
+        let td = TestUtils.scryRenderedDOMComponentsWithTag(component, 'td') as HTMLElement[];
+
+        expect(td.length).to.equal(2);
+        expect(td[0].style.backgroundColor).to.equal('red');
+        expect(td[1].style.backgroundColor).to.equal('blue');
+    });
+
+    it('can use values present in other columns to determine styles for cell', () => {
+        const data = [
+            {city: 'Shanghai', color: 'red'},
+            {city: 'Karachi', color: 'blue'}
+        ];
+        const columns = [{
+            title: 'City',
+            field: 'city',
+            style: (color, row) => {
+                return {backgroundColor: row.color};
+            }
+        }];
+        const component = TestUtils.renderIntoDocument(
+            <KitchenTable data={data} columns={columns}/>
+        ) as Component;
+
+        let td = TestUtils.scryRenderedDOMComponentsWithTag(component, 'td') as HTMLElement[];
+
+        expect(td.length).to.equal(2);
+        expect(td[0].style.backgroundColor).to.equal('red');
+        expect(td[1].style.backgroundColor).to.equal('blue');
+    });
+
     it('can take function to determine header value', () => {
         let data = [
             {area: 6340.5}

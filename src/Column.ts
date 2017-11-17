@@ -1,4 +1,4 @@
-import {ReactNode} from "react";
+import {CSSProperties, ReactNode} from "react";
 import {Row} from "./Row";
 
 export interface Column {
@@ -7,5 +7,6 @@ export interface Column {
     renderer?: (value: any, row: Row) => ReactNode,
     defaultValue?: string | (() => ReactNode),
     className?: string | ((value: any, row: Row) => string),
+    style?: (value: any, row: Row) => CSSProperties,
     subColumns?: Column[]
 }

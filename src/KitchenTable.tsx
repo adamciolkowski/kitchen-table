@@ -232,9 +232,11 @@ export default class KitchenTable extends React.Component<Props, State> {
     }
 
     renderCell(row, column: Column, idx) {
+        let style = column.style && column.style(this.rawCellValue(row, column), row);
         return (
             <td
                 key={idx}
+                style={style}
                 className={this.className(row, column)}
             >{this.displayedCellValue(row, column)}</td>
         );

@@ -127,6 +127,25 @@ let columns = [
 ];
 ```
 
+- `style`
+
+A function that returns `CSSProperties` object representing inline styles that will be applied to cell. 
+The function takes 2 parameters: cell value and row.
+
+```javascript
+let columns = [
+    // ...
+    {
+        title: 'City',
+        field: 'city',
+        style: (value, row) => {
+            return {backgroundColor: row.color};
+        }
+    },
+    // ...
+];
+```
+
 - `subColumns`
 
 An array of column definitions. The columns will be rendered as sub-columns.
