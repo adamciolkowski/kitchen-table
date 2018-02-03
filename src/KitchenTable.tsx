@@ -174,16 +174,22 @@ export default class KitchenTable extends React.Component<Props, State> {
 
     onHeaderCellClick(column: Column) {
         let order = this.sortOrder(column);
-        this.setState({sortColumn: column, sortOrder: order}, () => {
+        this.setState({sortColumn: order ? column : null, sortOrder: order}, () => {
             this.props.onSortEnd(column, order);
         });
     }
 
     sortOrder(column: Column): SortOrder {
-        if(column !== this.state.sortColumn) {
+        if (column !== this.state.sortColumn)
             return 'asc';
+        switch (this.state.sortOrder) {
+            case null:
+                return 'asc';
+            case 'asc':
+                return 'desc';
+            case 'desc':
+                return null;
         }
-        return this.state.sortOrder === 'asc' ? 'desc' : 'asc';
     }
 
     renderBody() {

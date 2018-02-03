@@ -455,6 +455,31 @@ describe('sorting', () => {
         expect(columnCellValues(component, 0)).to.deep.equal(['c', 'b', 'a']);
     });
 
+    it('restores initial ordering when column header is clicked three times', () => {
+        let data = [
+            {letter: 'b'},
+            {letter: 'a'},
+            {letter: 'c'}
+        ];
+        const columns = [
+            {title: 'Letter', field: 'letter'}
+        ];
+        const component = TestUtils.renderIntoDocument(
+            <KitchenTable
+                data={data}
+                columns={columns}
+                sortable={true}
+            />
+        ) as Component;
+        let headerCells = TestUtils.scryRenderedDOMComponentsWithTag(component, 'th');
+        let firstHeaderCell = headerCells[0];
+        for (let i = 0; i < 3; i++) {
+            TestUtils.Simulate.click(firstHeaderCell);
+        }
+
+        expect(columnCellValues(component, 0)).to.deep.equal(['b', 'a', 'c']);
+    });
+
     it('sorts column ascending on header cell click when different column was previously sorted', () => {
         let data = [
             {letter: 'b', number: 1},
