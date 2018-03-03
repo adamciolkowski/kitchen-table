@@ -170,6 +170,22 @@ let columns = [
 ];
 ```
 
+- `freeze`
+
+Boolean value that determines if column should be frozen. It makes column visible when vertical scroll is used. 
+Default is false.
+
+```javascript
+let columns = [
+    {
+        title: 'City',
+        field: 'city',
+        freeze: true
+    },
+    // ...
+];
+```
+
 ### Complete example
 
 ```javascript

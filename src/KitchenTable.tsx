@@ -10,6 +10,7 @@ import noop = require("lodash/noop");
 import orderBy = require("lodash/orderBy");
 import times = require("lodash/times");
 import sum = require("lodash/sum");
+import "./KitchenTable.scss";
 
 type RowCallback = (row: Row, rowIndex: number, event: Event) => void;
 
@@ -34,6 +35,8 @@ interface State {
     sortOrder: SortOrder
 }
 
+const frozenColumnClass = 'KitchenTable-frozen-column';
+
 export default class KitchenTable extends React.Component<Props, State> {
 
     private static defaultProps: Partial<Props> = {
@@ -44,11 +47,10 @@ export default class KitchenTable extends React.Component<Props, State> {
     };
 
     private table: HTMLTableElement;
-    private thead: HTMLTableSectionElement;
 
     constructor(props) {
         super(props);
-        this.adjustHeaderPosition = this.adjustHeaderPosition.bind(this);
+        this.handleScroll = this.handleScroll.bind(this);
         this.state = {
             sortColumn : null,
             sortOrder: null
@@ -56,22 +58,33 @@ export default class KitchenTable extends React.Component<Props, State> {
     }
 
     componentDidMount() {
-        if(this.props.fixedHeader) {
-            let parent = this.table.parentElement;
-            parent.addEventListener('scroll', this.adjustHeaderPosition);
-        }
+        let parent = this.table.parentElement;
+        parent.addEventListener('scroll', this.handleScroll);
     }
 
     componentWillUnmount() {
-        if(this.props.fixedHeader) {
-            let parent = this.table.parentElement;
-            parent.removeEventListener('scroll', this.adjustHeaderPosition);
-        }
+        let parent = this.table.parentElement;
+        parent.removeEventListener('scroll', this.handleScroll);
     }
 
-    adjustHeaderPosition() {
-        let parent = this.table.parentElement;
-        this.thead.style.transform = `translateY(${parent.scrollTop}px)`;
+    handleScroll(e) {
+        let parent = e.target;
+        let headerCells = this.table.tHead.getElementsByTagName('th');
+        setTransform(headerCells, th => {
+            let isFrozen = th.className.indexOf(frozenColumnClass) >= 0;
+            let x = isFrozen ? `${parent.scrollLeft}px` : 0;
+            let y = this.props.fixedHeader ? `${parent.scrollTop}px` : 0;
+            return `translate(${x}, ${y})`;
+        });
+        let frozenCells = this.table.tBodies[0].getElementsByClassName(frozenColumnClass);
+        setTransform(frozenCells, () => `translateX(${parent.scrollLeft}px)`);
+
+        function setTransform(nodeList: NodeList, transform: ((HTMLElement) => string)) {
+            for (let i = 0; i < nodeList.length; i++) {
+                let e = nodeList[i] as HTMLElement;
+                e.style.transform = transform(e);
+            }
+        }
     }
 
     render() {
@@ -88,7 +101,7 @@ export default class KitchenTable extends React.Component<Props, State> {
 
     renderHead() {
         return (
-            <thead ref={thead => {this.thead = thead;}}>
+            <thead>
             {this.renderHeaderRows()}
             </thead>
         );
@@ -121,7 +134,7 @@ export default class KitchenTable extends React.Component<Props, State> {
         function columnsFor(level: number) {
             let columns = this.props.columns;
             times(level, () => {
-                columns = flatMap(columns, c => c.subColumns).filter(sc => sc);
+                columns = flatMap(columns, c => c.subColumns).filter(Boolean);
             });
             return columns;
         }
@@ -156,9 +169,13 @@ export default class KitchenTable extends React.Component<Props, State> {
     }
 
     headerCellProps(column: Column, rowSpan, idx, isSortable: boolean) {
+        let classes = [
+            isSortable ? 'KitchenTable-sortable' : null,
+            column.freeze ? frozenColumnClass : null
+        ];
         return {
             key: idx,
-            className: isSortable ? 'KitchenTable-sortable' : null,
+            className: classes.filter(Boolean).join(' '),
             rowSpan: column.subColumns ? 1 : rowSpan,
             colSpan: getColSpan(column),
             onClick: isSortable ? () => this.onHeaderCellClick(column) : null
@@ -239,11 +256,15 @@ export default class KitchenTable extends React.Component<Props, State> {
 
     renderCell(row, column: Column, idx) {
         let style = column.style && column.style(this.rawCellValue(row, column), row);
+        let classes = [
+            column.freeze ? frozenColumnClass : null,
+            this.className(row, column)
+        ];
         return (
             <td
                 key={idx}
                 style={style}
-                className={this.className(row, column)}
+                className={classes.filter(Boolean).join(' ')}
             >{this.displayedCellValue(row, column)}</td>
         );
     }

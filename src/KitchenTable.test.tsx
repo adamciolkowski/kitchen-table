@@ -584,3 +584,75 @@ describe('sorting', () => {
         return map(rows, row => row.querySelectorAll('td')[column].textContent);
     }
 });
+
+describe('frozen columns', () => {
+    it('adds `KitchenTable-frozen-column` class to cells of frozen columns', () => {
+        let data = [
+            {city: 'Shanghai', country: 'China'}
+        ];
+        const columns = [
+            {title: 'City', field: 'city', freeze: true},
+            {title: 'Country', field: 'country'}
+        ];
+        const component = TestUtils.renderIntoDocument(
+            <KitchenTable
+                data={data}
+                columns={columns}
+            />
+        ) as Component;
+
+        let headerCells = TestUtils.scryRenderedDOMComponentsWithTag(component, 'th');
+        expect(headerCells[0].className).to.equal('KitchenTable-frozen-column');
+        expect(headerCells[1].className).to.equal('');
+
+        let cells = TestUtils.findRenderedDOMComponentWithTag(component, 'table')
+            .querySelectorAll('tbody td');
+        expect(cells[0].className).to.equal('KitchenTable-frozen-column');
+        expect(cells[1].className).to.equal('');
+    });
+
+    it("translates frozen cells by parent component's scrollLeft value", () => {
+        let data = [
+            {city: 'Shanghai', country: 'China'}
+        ];
+        const columns = [
+            {title: 'City', field: 'city', freeze: true},
+            {title: 'Country', field: 'country'}
+        ];
+        const component = TestUtils.renderIntoDocument(
+            <Wrapper>
+                <KitchenTable
+                    data={data}
+                    columns={columns}
+                />
+            </Wrapper>
+        ) as Component;
+
+        let wrapper = TestUtils.findRenderedDOMComponentWithTag(component, 'div');
+        wrapper.scrollLeft = 100;
+
+        let event = document.createEvent('HTMLEvents');
+        event.initEvent('scroll', false, true);
+        wrapper.dispatchEvent(event);
+
+        let headerCells = TestUtils.scryRenderedDOMComponentsWithTag(component, 'th') as HTMLElement[];
+        expect(headerCells[0].style.transform).to.equal('translate(100px, 0)');
+        expect(headerCells[1].style.transform).to.equal('translate(0, 0)');
+
+        let cells = TestUtils.findRenderedDOMComponentWithTag(component, 'table')
+            .querySelectorAll('tbody td');
+        expect((cells[0] as HTMLElement).style.transform).to.equal('translateX(100px)');
+        expect((cells[1] as HTMLElement).style.transform).to.be.undefined;
+    });
+});
+
+class Wrapper extends React.Component<{}, {}> {
+
+    render() {
+        return (
+            <div>
+                {this.props.children}
+            </div>
+        );
+    }
+}

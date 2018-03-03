@@ -1,0 +1,11 @@
+.KitchenTable-frozen-column {
+  position: relative;
+}
+
+th.KitchenTable-frozen-column {
+  z-index: 2;
+}
+
+td.KitchenTable-frozen-column {
+  z-index: 1;
+}

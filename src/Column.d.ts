@@ -8,5 +8,6 @@ export interface Column {
     defaultValue?: string | (() => ReactNode),
     className?: string | ((value: any, row: Row) => string),
     style?: (value: any, row: Row) => CSSProperties,
-    subColumns?: Column[]
+    subColumns?: Column[],
+    freeze?: boolean
 }
